@@ -1,0 +1,672 @@
+SRS – SPECYFIKACJA WYMAGAŃ OPROGRAMOWANIA
+
+SYSTEM REJESTRACJI WYJŚĆ I POWROTÓW UCZNIÓW
+
+
+1. INFORMACJE OGÓLNE
+
+1.1. Nazwa systemu
+
+System rejestracji wyjść i powrotów uczniów.
+
+1.2. Cel dokumentu
+
+Celem dokumentu jest określenie wymagań funkcjonalnych i niefunkcjonalnych dla aplikacji internetowej służącej do:
+
+- rejestrowania wyjść uczniów,
+- rejestrowania ich powrotów,
+- ewidencjonowania powodów wyjść,
+- przeglądania historii wyjść i powrotów,
+- zarządzania zdarzeniami przypisanymi do uczniów,
+- zarządzania kontami użytkowników posiadających odpowiednie uprawnienia.
+
+1.3. Zakres systemu
+
+System jest aplikacją internetową stworzoną z wykorzystaniem frameworka Angular.
+
+Aplikacja umożliwia zalogowanym użytkownikom przeglądanie klas i uczniów oraz rejestrowanie informacji dotyczących wyjść i powrotów uczniów.
+
+System zawiera następujące moduły:
+
+- logowanie użytkownika,
+- zarządzanie sesją,
+- panel statusu,
+- panel historii,
+- panel administracyjny,
+- nawigację pomiędzy modułami,
+- obsługę danych klas, uczniów i zdarzeń,
+- kontrolę dostępu na podstawie uprawnień użytkownika.
+
+
+2. OPIS SYSTEMU
+
+2.1. Charakterystyka
+
+System przechowuje informacje o:
+
+- użytkownikach/nauczycielach,
+- klasach,
+- uczniach,
+- wyjściach uczniów,
+- powrotach uczniów,
+- powodach wyjść,
+- zdarzeniach przypisanych do uczniów.
+
+Dane są udostępniane użytkownikowi w zależności od jego uprawnień.
+
+Nauczyciel może mieć dostęp tylko do określonych klas, natomiast konto posiadające uprawnienie "godMode" może mieć dostęp do wszystkich klas oraz funkcji administracyjnych.
+
+2.2. Technologie
+
+System został zaimplementowany z wykorzystaniem:
+
+- Angular,
+- TypeScript,
+- HTML,
+- CSS,
+- Angular Router,
+- Angular Forms,
+- Web Crypto API,
+- localStorage.
+
+
+3. UŻYTKOWNICY SYSTEMU
+
+3.1. Niezalogowany użytkownik
+
+Niezalogowany użytkownik może:
+
+- przejść do strony logowania,
+- zalogować się przy użyciu danych uwierzytelniających.
+
+Nie powinien mieć dostępu do funkcjonalności przeznaczonych dla zalogowanych użytkowników.
+
+3.2. Nauczyciel
+
+Nauczyciel posiada konto w systemie i może:
+
+- zalogować się,
+- przeglądać przypisane klasy,
+- przeglądać uczniów należących do przypisanych klas,
+- przeglądać historię zdarzeń,
+- rejestrować wyjście ucznia,
+- rejestrować powrót ucznia.
+
+Lista dostępnych klas jest ustalana na podstawie pola "classes" użytkownika.
+
+3.3. Administrator / użytkownik z "godMode"
+
+Użytkownik posiadający "godMode" ma rozszerzony dostęp do danych systemu.
+
+Może:
+
+- przeglądać wszystkie klasy,
+- przeglądać wszystkich uczniów,
+- korzystać z panelu administracyjnego,
+- dodawać zdarzenia,
+- edytować zdarzenia,
+- usuwać zdarzenia.
+
+
+4. WYMAGANIA FUNKCJONALNE
+
+4.1. Logowanie
+
+FR-01 – Logowanie
+
+System musi umożliwiać użytkownikowi zalogowanie się przy użyciu loginu i hasła.
+
+FR-02 – Weryfikacja danych
+
+System musi wyszukiwać konto na podstawie loginu i zweryfikować podane hasło.
+
+Do weryfikacji hasła wykorzystywany jest mechanizm PBKDF2-SHA-256.
+
+FR-03 – Obsługa niepoprawnego logowania
+
+W przypadku podania nieprawidłowych danych system nie powinien tworzyć aktywnej sesji użytkownika.
+
+FR-04 – Zapamiętanie sesji
+
+Po poprawnym logowaniu system zapisuje identyfikator konta w localStorage.
+
+FR-05 – Przywrócenie sesji
+
+Po ponownym uruchomieniu lub odświeżeniu aplikacji system powinien spróbować przywrócić zalogowanego użytkownika na podstawie danych zapisanych w localStorage.
+
+FR-06 – Wylogowanie
+
+System musi umożliwiać wylogowanie użytkownika.
+
+Podczas wylogowania dane sesji zapisane w localStorage powinny zostać usunięte.
+
+
+5. ZARZĄDZANIE KLASAMI I UCZNIAMI
+
+FR-07 – Lista klas
+
+System musi wyświetlać listę klas dostępnych dla aktualnie zalogowanego użytkownika.
+
+Dostępność klasy jest określana na podstawie:
+
+- listy klas przypisanych do nauczyciela,
+- uprawnienia "godMode".
+
+FR-08 – Rozwijanie klasy
+
+Użytkownik powinien mieć możliwość rozwinięcia lub zwinięcia klasy.
+
+Po rozwinięciu klasy system wyświetla listę uczniów.
+
+FR-09 – Lista uczniów
+
+System musi umożliwiać wyświetlenie uczniów należących do wybranej klasy.
+
+FR-10 – Rozwijanie danych ucznia
+
+Użytkownik może rozwinąć dane konkretnego ucznia w celu wyświetlenia przypisanych mu zdarzeń.
+
+
+6. REJESTROWANIE WYJŚCIA UCZNIA
+
+FR-11 – Rozpoczęcie rejestracji wyjścia
+
+System musi umożliwiać rozpoczęcie rejestracji wyjścia ucznia.
+
+Po rozpoczęciu rejestracji system zapisuje:
+
+- datę,
+- czas rozpoczęcia,
+- powód wyjścia.
+
+Data i czas są pobierane z bieżącego czasu systemowego.
+
+FR-12 – Podanie powodu
+
+Podczas rozpoczęcia rejestracji system powinien umożliwić użytkownikowi podanie powodu wyjścia.
+
+FR-13 – Rejestracja powrotu
+
+Jeżeli dla ucznia istnieje rozpoczęta, ale niezakończona rejestracja, kolejne użycie funkcji rejestracji powinno zakończyć zdarzenie.
+
+System zapisuje czas powrotu.
+
+FR-14 – Zakończenie rejestracji
+
+Po zapisaniu powrotu tymczasowa rejestracja powinna zostać wyzerowana.
+
+
+7. HISTORIA
+
+FR-15 – Wyświetlanie historii
+
+System musi umożliwiać użytkownikowi przeglądanie historii zdarzeń.
+
+Historia jest organizowana hierarchicznie:
+
+Klasa -> Uczeń -> Zdarzenie
+
+FR-16 – Szczegóły zdarzenia
+
+Dla każdego zdarzenia system może wyświetlić:
+
+- datę,
+- godzinę wyjścia,
+- godzinę powrotu,
+- powód.
+
+FR-17 – Rozwijanie zdarzenia
+
+Użytkownik może rozwinąć lub zwinąć szczegóły konkretnego zdarzenia.
+
+
+8. PANEL ADMINISTRACYJNY
+
+FR-18 – Dostęp do panelu administracyjnego
+
+System powinien udostępniać panel administracyjny użytkownikom posiadającym odpowiednie uprawnienia.
+
+FR-19 – Dodawanie zdarzenia
+
+Administrator może ręcznie dodać zdarzenie dla wybranego ucznia.
+
+Podczas dodawania można określić:
+
+- datę,
+- czas wyjścia,
+- czas powrotu,
+- powód.
+
+FR-20 – Zdarzenie bez godziny
+
+System umożliwia zapisanie zdarzenia bez konkretnego czasu wyjścia.
+
+W takim przypadku ustawiana jest właściwość "ignoreTime".
+
+FR-21 – Edycja zdarzenia
+
+Administrator może edytować istniejące zdarzenie.
+
+Możliwe jest zmodyfikowanie:
+
+- daty,
+- godziny wyjścia,
+- godziny powrotu,
+- powodu.
+
+FR-22 – Usuwanie zdarzenia
+
+Administrator może usunąć wybrane zdarzenie.
+
+Po usunięciu zdarzenie powinno zostać usunięte zarówno z listy zdarzeń ucznia, jak i z odpowiadającego mu stanu interfejsu.
+
+FR-23 – Generowanie identyfikatora
+
+Podczas dodawania nowego zdarzenia system generuje jego identyfikator na podstawie istniejących identyfikatorów zdarzeń danego ucznia.
+
+
+9. INTERFEJS UŻYTKOWNIKA
+
+FR-24 – Nawigacja
+
+System musi zapewniać nawigację pomiędzy głównymi częściami aplikacji:
+
+- Historia,
+- Status,
+- Admin,
+- Logowanie.
+
+FR-25 – Informacja o użytkowniku
+
+Navbar powinien wyświetlać nazwę zalogowanego użytkownika.
+
+W przypadku braku zalogowanego użytkownika powinien zostać wyświetlony tekst "Zaloguj".
+
+FR-26 – Stan rozwinięcia
+
+System powinien pamiętać stan rozwinięcia klas, uczniów i zdarzeń podczas bieżącego korzystania z danego widoku.
+
+
+10. WYMAGANIA DOTYCZĄCE DANYCH
+
+10.1. Nauczyciel
+
+Obiekt nauczyciela powinien zawierać co najmniej:
+
+- identyfikator,
+- login,
+- nazwę,
+- listę przypisanych klas,
+- informację o uprawnieniu "godMode",
+- hash hasła,
+- sól hasła.
+
+10.2. Klasa
+
+Klasa powinna zawierać:
+
+- identyfikator,
+- nazwę,
+- listę uczniów.
+
+10.3. Uczeń
+
+Uczeń powinien zawierać:
+
+- identyfikator,
+- nazwę,
+- listę zdarzeń.
+
+10.4. Zdarzenie
+
+Zdarzenie powinno zawierać:
+
+- identyfikator,
+- datę/czas wyjścia,
+- datę/czas powrotu,
+- powód,
+- informację "ignoreTime".
+
+
+11. WYMAGANIA BEZPIECZEŃSTWA
+
+NFR-01 – Hasła
+
+Hasła użytkowników nie powinny być przechowywane w postaci jawnej.
+
+System wykorzystuje PBKDF2-SHA-256 do wyprowadzenia skrótu hasła.
+
+NFR-02 – Sól kryptograficzna
+
+Każde hasło powinno posiadać indywidualną sól kryptograficzną.
+
+Sól jest generowana przy użyciu crypto.getRandomValues().
+
+NFR-03 – Liczba iteracji
+
+Mechanizm PBKDF2 powinien wykorzystywać 600 000 iteracji.
+
+NFR-04 – Brak hasła w localStorage
+
+System nie powinien zapisywać hasła użytkownika w localStorage.
+
+NFR-05 – Sesja
+
+Aktualna implementacja identyfikuje użytkownika na podstawie wartości "helper_accountID" zapisanej w localStorage.
+
+W docelowym środowisku produkcyjnym mechanizm ten powinien zostać zastąpiony przez bezpieczny mechanizm sesji po stronie serwera, np. token sesyjny.
+
+
+12. WYMAGANIA NIEFUNKCJONALNE
+
+NFR-06 – Responsywność
+
+Interfejs powinien reagować na działania użytkownika bez konieczności przeładowywania całej strony.
+
+NFR-07 – Czytelność
+
+Informacje powinny być prezentowane w strukturze:
+
+Klasa -> Uczeń -> Zdarzenia -> Szczegóły
+
+NFR-08 – Wydajność
+
+Operacje rozwijania i zwijania elementów interfejsu powinny być wykonywane lokalnie bez zbędnych operacji na danych.
+
+NFR-09 – Kompatybilność
+
+Aplikacja powinna działać w nowoczesnych przeglądarkach internetowych obsługujących:
+
+- JavaScript,
+- Web Crypto API,
+- localStorage,
+- współczesne funkcje Angular.
+
+NFR-10 – Utrzymywalność
+
+Kod powinien być podzielony na komponenty i serwisy odpowiedzialne za konkretne funkcje.
+
+W szczególności:
+
+- komponenty odpowiadają za interfejs,
+- SessionData odpowiada za sesję i uwierzytelnianie,
+- Database odpowiada za dane,
+- modele reprezentują dane domenowe.
+
+
+13. REGUŁY BIZNESOWE
+
+BR-01
+
+Nauczyciel może uzyskać dostęp tylko do klas znajdujących się na jego liście "classes", chyba że posiada "godMode".
+
+BR-02
+
+Uczeń może posiadać wiele zdarzeń.
+
+BR-03
+
+Każde zdarzenie posiada unikalny identyfikator w obrębie listy zdarzeń danego ucznia.
+
+BR-04
+
+Rozpoczęte wyjście ucznia posiada datę rozpoczęcia, ale może jeszcze nie posiadać czasu powrotu.
+
+BR-05
+
+Zakończenie rejestracji wyjścia powoduje utworzenie kompletnego zdarzenia zawierającego czas powrotu.
+
+BR-06
+
+Zdarzenie może zostać zapisane bez konkretnej godziny wyjścia. W takim przypadku "ignoreTime" ma wartość true.
+
+BR-07
+
+Użytkownik może mieć dostęp do wielu klas.
+
+BR-08
+
+Użytkownik posiadający "godMode" ma dostęp do wszystkich klas niezależnie od zawartości pola "classes".
+
+
+14. PRZYPADKI UŻYCIA
+
+UC-01 – Logowanie
+
+Aktor: Nauczyciel / Administrator
+
+1. Użytkownik otwiera aplikację.
+2. Przechodzi do formularza logowania.
+3. Podaje login.
+4. Podaje hasło.
+5. System wyszukuje konto.
+6. System oblicza hash podanego hasła.
+7. System porównuje hash z zapisanym hashem.
+8. W przypadku zgodności użytkownik zostaje zalogowany.
+
+UC-02 – Sprawdzenie statusu ucznia
+
+Aktor: Nauczyciel
+
+1. Użytkownik przechodzi do zakładki Status.
+2. System wyświetla dostępne klasy.
+3. Użytkownik rozwija klasę.
+4. System wyświetla uczniów.
+5. Użytkownik może rozpocząć lub zakończyć rejestrację wyjścia.
+
+UC-03 – Rejestracja wyjścia
+
+Aktor: Nauczyciel
+
+1. Użytkownik wybiera ucznia.
+2. Wybiera opcję rejestracji wyjścia.
+3. System zapisuje aktualną datę i godzinę.
+4. System prosi o podanie powodu.
+5. Informacja zostaje zapisana jako aktywna rejestracja.
+
+UC-04 – Rejestracja powrotu
+
+Aktor: Nauczyciel
+
+1. Użytkownik wybiera ucznia posiadającego aktywną rejestrację.
+2. System rozpoznaje istniejącą rejestrację.
+3. System zapisuje aktualną datę i godzinę jako czas powrotu.
+4. System tworzy zdarzenie.
+5. Aktywna rejestracja zostaje wyzerowana.
+
+UC-05 – Przeglądanie historii
+
+Aktor: Nauczyciel / Administrator
+
+1. Użytkownik przechodzi do zakładki Historia.
+2. System wyświetla dostępne klasy.
+3. Użytkownik rozwija klasę.
+4. Użytkownik wybiera ucznia.
+5. System wyświetla jego zdarzenia.
+6. Użytkownik może wyświetlić szczegóły zdarzenia.
+
+UC-06 – Edycja zdarzenia
+
+Aktor: Administrator
+
+1. Administrator otwiera panel administracyjny.
+2. Wybiera ucznia.
+3. Wybiera zdarzenie.
+4. Wybiera opcję edycji.
+5. System wyświetla formularz.
+6. Administrator modyfikuje dane.
+7. System zapisuje zmiany.
+
+UC-07 – Usunięcie zdarzenia
+
+Aktor: Administrator
+
+1. Administrator wybiera zdarzenie.
+2. Wybiera opcję usunięcia.
+3. System usuwa zdarzenie.
+4. Lista zdarzeń zostaje zaktualizowana.
+
+
+15. ARCHITEKTURA LOGICZNA
+
+System składa się z następujących warstw:
+
+                    APLIKACJA ANGULAR
+                           |
+          +----------------+----------------+
+          |                |                |
+     Komponenty         Serwisy           Modele
+          |                |                |
+    +-----+-----+      +---+------+     +---+------+
+    |     |     |      |          |     |   |      |
+ History Status Admin Session   Database Class Student
+    |             |
+    +------+------+
+           |
+         Navbar
+
+
+Komponenty:
+
+- History
+- CurrentStatus
+- AdminPanel
+- Navbar
+
+Serwisy:
+
+- SessionData
+- Database
+
+Modele:
+
+- Teacher
+- Class
+- Student
+- Infraction
+
+
+16. ZARZĄDZANIE SESJĄ
+
+Za zarządzanie sesją odpowiada SessionData.
+
+Podczas logowania:
+
+login + hasło
+      |
+      v
+wyszukanie konta
+      |
+      v
+pobranie soli
+      |
+      v
+PBKDF2-SHA-256
+      |
+      v
+porównanie hashy
+      |
+      v
+zalogowanie
+      |
+      v
+zapis accountID w localStorage
+
+
+Podczas odświeżenia aplikacji:
+
+localStorage
+     |
+     v
+accountID
+     |
+     v
+wyszukanie użytkownika
+     |
+     v
+przywrócenie account
+
+
+Podczas wylogowania:
+
+account = null
+      +
+usunięcie danych z localStorage
+
+
+17. OGRANICZENIA OBECNEJ IMPLEMENTACJI
+
+Na podstawie przedstawionego kodu należy uwzględnić następujące ograniczenia:
+
+1. Dane są pobierane z lokalnego serwisu Database.
+2. Mechanizm sesji opiera się na localStorage.
+3. Identyfikator użytkownika jest przechowywany po stronie klienta.
+4. Weryfikacja uprawnień odbywa się w aplikacji Angular.
+5. Brak widocznego backendu odpowiedzialnego za autoryzację.
+6. Brak widocznej trwałej bazy danych po stronie serwera.
+7. Zmiany danych mogą być utracone po przeładowaniu aplikacji, jeżeli Database nie zapewnia trwałego zapisu.
+
+W przypadku wdrożenia produkcyjnego zalecane jest przeniesienie uwierzytelniania, autoryzacji i zapisu danych na serwer.
+
+
+18. MOŻLIWE PRZYSZŁE ROZSZERZENIA
+
+Potencjalne rozszerzenia systemu obejmują:
+
+- trwałą bazę danych,
+- backend REST API,
+- serwerowe zarządzanie sesjami,
+- zarządzanie klasami,
+- dodawanie i usuwanie uczniów,
+- zarządzanie kontami nauczycieli,
+- zmianę haseł,
+- odzyskiwanie haseł,
+- rejestrowanie historii zmian,
+- filtrowanie historii według dat,
+- wyszukiwanie uczniów,
+- eksport historii do CSV/PDF,
+- raporty dotyczące wyjść uczniów,
+- automatyczne wygaszanie sesji,
+- dodatkowe poziomy uprawnień.
+
+
+19. KRYTERIA AKCEPTACJI
+
+System zostanie uznany za spełniający podstawowe wymagania, jeżeli:
+
+- użytkownik może się zalogować poprawnymi danymi,
+- niepoprawne hasło nie umożliwia zalogowania,
+- sesja może zostać przywrócona po odświeżeniu strony,
+- użytkownik może się wylogować,
+- nauczyciel widzi przypisane mu klasy,
+- użytkownik z godMode widzi wszystkie klasy,
+- można wyświetlić listę uczniów,
+- można rozpocząć rejestrację wyjścia,
+- można zakończyć rejestrację poprzez rejestrację powrotu,
+- historia zdarzeń jest wyświetlana hierarchicznie,
+- administrator może dodać zdarzenie,
+- administrator może edytować zdarzenie,
+- administrator może usunąć zdarzenie,
+- szczegóły zdarzenia zawierają datę, godziny oraz powód,
+- hasła nie są przechowywane w postaci jawnej,
+- interfejs poprawnie obsługuje rozwijanie i zwijanie klas, uczniów oraz zdarzeń.
+
+
+20. PODSUMOWANIE
+
+System jest aplikacją internetową wspierającą ewidencję wyjść uczniów.
+
+Główne funkcje systemu obejmują:
+
+- uwierzytelnianie użytkowników,
+- kontrolę dostępu do klas,
+- rejestrowanie wyjść,
+- rejestrowanie powrotów,
+- przeglądanie historii,
+- dodawanie zdarzeń,
+- edycję zdarzeń,
+- usuwanie zdarzeń,
+- obsługę kont nauczycieli i administratorów.
+
+Architektura aplikacji opiera się na komponentach Angular, serwisach odpowiedzialnych za dane i sesję oraz modelach reprezentujących użytkowników, klasy, uczniów i zdarzenia.
+
